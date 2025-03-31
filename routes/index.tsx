@@ -1,3 +1,3 @@
-export default async function indexRoute(_req: Request) {
-  return new Response("Welcome to Bun!");
-}
+import { Elysia } from "elysia";
+
+export default new Elysia().get("/", () => "Welcome to the API!");

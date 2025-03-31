@@ -1,17 +1,25 @@
-import { serve } from "bun";
+import { Elysia } from "elysia";
+import { cookie } from "@elysiajs/cookie";
+import { authPlugin } from "./plugins/auth";
+
+//Utils
+import swagger from "@elysiajs/swagger";
+
+// Routes
 import indexRoute from "./routes/index";
-import usersRoute from "./routes/users";
+import userRoutes from "./routes/users/index";
+import loginRoute from "./routes/auth/login";
+import profileRoute from "./routes/auth/profile";
+import testAuth from "./routes/auth/test";
+const app = new Elysia()
+  .use(swagger()) // Opretter Automatisk Swagger Dokumentation over api endpoints.
+  .use(cookie())
+  .use(authPlugin)
+  .use(indexRoute)
+  .use(userRoutes)
+  .use(loginRoute)
+  .use(profileRoute)
+  .use(testAuth)
+  .listen(3000);
 
-const server = serve({
-  port: 3000,
-  fetch(req) {
-    const url = new URL(req.url);
-
-    if (url.pathname === "/") return indexRoute(req);
-    if (url.pathname === "/api/users") return usersRoute(req);
-
-    return new Response("Not found", { status: 404 });
-  },
-});
-
-console.log(`Server listening on http://localhost:${server.port}`);
+console.log(`✅ Server listening on http://localhost:${app.server?.port}`);
